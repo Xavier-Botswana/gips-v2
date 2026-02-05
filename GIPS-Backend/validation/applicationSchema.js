@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const HTTP_STATUS = require('../utils/httpStatus');
 
 const baseFields = {
   guest_id: Joi.string().required().messages({
@@ -48,7 +49,7 @@ const validateApplication = (schema) => (req, res, next) => {
   const { error, value } = schema.validate(req.body, { abortEarly: false, stripUnknown: true });
   if (error) {
     const details = error.details.map((d) => ({ field: d.context?.key, message: d.message }));
-    return res.status(400).json({ status: 'fail', message: 'Validation failed', errors: details });
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({ status: 'fail', message: 'Validation failed', errors: details });
   }
   req.body = value;
   return next();

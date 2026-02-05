@@ -1,3 +1,4 @@
+const HTTP_STATUS = require('../utils/httpStatus');
 const pb = require('../utils/dbBase');
 const catchAsync = require('../utils/catchAsync');
 const analyticsCache = require('../utils/analyticsCache');
@@ -210,7 +211,7 @@ exports.getAnalyticsByFaculty = catchAsync(async (req, res) => {
     });
   }, 15); // Cache for 15 minutes
 
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     status: 'success',
     cached: result.cached,
     cachedAt: result.computedAt ? new Date(result.computedAt).toISOString() : null,
@@ -287,7 +288,7 @@ exports.getAnalyticsByProgram = catchAsync(async (req, res) => {
     });
   }, 15); // Cache for 15 minutes
 
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     status: 'success',
     cached: result.cached,
     cachedAt: result.computedAt ? new Date(result.computedAt).toISOString() : null,
@@ -376,7 +377,7 @@ exports.getAnalyticsByModule = catchAsync(async (req, res) => {
     });
   }, 15); // Cache for 15 minutes
 
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     status: 'success',
     cached: result.cached,
     cachedAt: result.computedAt ? new Date(result.computedAt).toISOString() : null,
@@ -448,7 +449,7 @@ exports.getAnalyticsByYearOfStudy = catchAsync(async (req, res) => {
     });
   }, 15); // Cache for 15 minutes
 
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     status: 'success',
     cached: result.cached,
     cachedAt: result.computedAt ? new Date(result.computedAt).toISOString() : null,
@@ -648,7 +649,7 @@ exports.getDepartmentPerformanceReport = catchAsync(async (req, res) => {
     });
   }, 15); // Cache for 15 minutes
 
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     status: 'success',
     cached: result.cached,
     cachedAt: result.computedAt ? new Date(result.computedAt).toISOString() : null,
@@ -662,7 +663,7 @@ exports.getDepartmentPerformanceReport = catchAsync(async (req, res) => {
 // Get cache statistics
 exports.getCacheStats = catchAsync(async (req, res) => {
   const stats = analyticsCache.getStats();
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     status: 'success',
     stats,
   });
@@ -671,7 +672,7 @@ exports.getCacheStats = catchAsync(async (req, res) => {
 // Invalidate all analytics cache
 exports.invalidateCache = catchAsync(async (req, res) => {
   analyticsCache.invalidateAll();
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     status: 'success',
     message: 'All analytics cache invalidated',
   });
@@ -681,14 +682,14 @@ exports.invalidateCache = catchAsync(async (req, res) => {
 exports.invalidateCacheByPattern = catchAsync(async (req, res) => {
   const { pattern } = req.body;
   if (!pattern) {
-    return res.status(400).json({
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({
       status: 'fail',
       message: 'Pattern is required',
     });
   }
   
   analyticsCache.invalidate(new RegExp(pattern));
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     status: 'success',
     message: `Cache invalidated for pattern: ${pattern}`,
   });

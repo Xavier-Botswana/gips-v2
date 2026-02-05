@@ -5,6 +5,8 @@
 
 const timeout = require('connect-timeout');
 const timeoutConfig = require('../config/timeouts');
+const HTTP_STATUS = require('../utils/httpStatus');
+
 
 /**
  * Create timeout middleware for Express routes
@@ -39,7 +41,7 @@ const globalTimeout = createTimeoutMiddleware(timeoutConfig.http.default);
  */
 const handleTimeout = (err, req, res, next) => {
   if (req.timedout) {
-    return res.status(503).json({
+    return res.status(HTTP_STATUS.SERVICE_UNAVAILABLE).json({
       status: 'error',
       message: 'Request timeout - the server took too long to respond',
       code: 'REQUEST_TIMEOUT',

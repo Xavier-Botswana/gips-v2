@@ -1,10 +1,11 @@
+const HTTP_STATUS = require('../utils/httpStatus');
 const axios = require('axios');
 const catchAsync = require('../utils/catchAsync');
 
 exports.sendAdmissionToDtef = catchAsync(async (req, res, next) => {
   const details = req.body;
 
-  res.status(200).json(details);
+  res.status(HTTP_STATUS.OK).json(details);
 
   //   const {expand,id} = details;
   //   // eslint-disable-next-line camelcase

@@ -1,3 +1,4 @@
+const HTTP_STATUS = require('../utils/httpStatus');
 const pb = require('../utils/dbBase');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
@@ -40,7 +41,7 @@ exports.getNotifications = catchAsync(async (req, res) => {
       sort: '-created',
     });
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     status: 'success',
     results: notifications.items.length,
     currentPage: page,
@@ -174,7 +175,7 @@ exports.newCreateNotification = catchAsync(async (req, res, next) => {
     response.warning = warnings.join(' ');
   }
 
-  return res.status(201).json(response);
+  return res.status(HTTP_STATUS.CREATED).json(response);
 });
 /** *********************** ****************************************************/
 
@@ -260,7 +261,7 @@ exports.createNotification = catchAsync(async (req, res, next) => {
     await sendSMS(mockReq, res);
   }
 
-  res.status(201).json({
+  res.status(HTTP_STATUS.CREATED).json({
     status: 'success',
     notification: {
       notification: newNotification,
@@ -295,7 +296,7 @@ exports.updateNotification = catchAsync(async (req, res, next) => {
       ...(date && { date }),
     });
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     status: 'success',
     notification: {
       notification: updatedNotification,
@@ -308,5 +309,5 @@ exports.deleteNotification = catchAsync(async (req, res) => {
 
   await pb.collection('notifications').delete(id);
 
-  res.status(204).json({ message: 'Notification deleted' });
+  res.status(HTTP_STATUS.NO_CONTENT).json({ message: 'Notification deleted' });
 });

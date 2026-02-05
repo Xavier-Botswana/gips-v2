@@ -104,7 +104,7 @@ exports.createApplication = catchAsync(async (req, res, next) => {
 
   const record = await ApplicationService.create(data);
 
-  return res.status(201).json({
+  return res.status(HTTP_STATUS.CREATED).json({
     status: 'success',
     data: record,
   });
@@ -145,7 +145,7 @@ exports.getApplications = catchAsync(async (req, res, next) => {
 
   const applications = await ApplicationService.list(page, limit, filterQuery, sort);
 
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     status: 'success',
     results: applications.items.length,
     currentPage: page,
@@ -166,7 +166,7 @@ exports.getApplication = catchAsync(async (req, res, next) => {
     return next(new AppError('Application not found', 404));
   }
 
-  return res.status(200).json({ status: 'success', data: application });
+  return res.status(HTTP_STATUS.OK).json({ status: 'success', data: application });
 });
 
 exports.getMyApplications = catchAsync(async (req, res, next) => {
@@ -182,7 +182,7 @@ exports.getMyApplications = catchAsync(async (req, res, next) => {
   const filter = `guest_id.user_id = "${String(userId).replace(/"/g, '\\"')}"`;
   const applications = await ApplicationService.list(page, limit, filter, '-created');
 
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     status: 'success',
     results: applications.items.length,
     currentPage: page,
@@ -211,7 +211,7 @@ exports.getApplicationDetails = catchAsync(async (req, res, next) => {
     user = await safeGetOne(pb, 'users', userId);
   }
 
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     status: 'success',
     data: {
       application,
@@ -286,7 +286,7 @@ exports.updateMyApplicationFiles = catchAsync(async (req, res, next) => {
     ...payload,
   });
 
-  return res.status(200).json({ status: 'success', data: updated });
+  return res.status(HTTP_STATUS.OK).json({ status: 'success', data: updated });
 });
 
 exports.updateApplication = catchAsync(async (req, res, next) => {
@@ -308,7 +308,7 @@ exports.updateApplication = catchAsync(async (req, res, next) => {
     },
   );
 
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     status: 'success',
     message: 'Application updated successfully',
     data: updatedApplication,
@@ -325,7 +325,7 @@ exports.deleteApplication = catchAsync(async (req, res, next) => {
 
   await ApplicationService.delete(applicationId);
 
-  return res.status(204).send();
+  return res.status(HTTP_STATUS.NO_CONTENT).send();
 });
 
 exports.getApplicationsByUserId = catchAsync(async (req, res, next) => {
@@ -341,7 +341,7 @@ exports.getApplicationsByUserId = catchAsync(async (req, res, next) => {
     '-created',
   );
 
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     status: 'success',
     data: applications.items?.[0] || null,
   });
@@ -395,7 +395,7 @@ exports.updateApplicationFiles = catchAsync(async (req, res, next) => {
     ...payload,
   });
 
-  return res.status(200).json({ status: 'success', data: updated });
+  return res.status(HTTP_STATUS.OK).json({ status: 'success', data: updated });
 });
 
 exports.getApplicationFileUrl = catchAsync(async (req, res, next) => {
@@ -440,7 +440,7 @@ exports.getApplicationFileUrl = catchAsync(async (req, res, next) => {
     (filename) => `${BASE_URL}/api/files/${application.collectionId}/${application.id}/${filename}`,
   );
 
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     status: 'success',
     data: {
       fileUrl: fileUrls[0],

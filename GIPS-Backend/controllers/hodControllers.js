@@ -1,3 +1,4 @@
+const HTTP_STATUS = require('../utils/httpStatus');
 const pb = require('../utils/dbBase');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
@@ -31,7 +32,7 @@ exports.getHods = catchAsync(async (req, res) => {
     sort: '-created',
   });
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     status: 'success',
     results: hods.items.length,
     currentPage: hods.page,
@@ -165,7 +166,7 @@ exports.reviewBatchResults = catchAsync(async (req, res, next) => {
     reviewDate: new Date(),
   });
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     message: `Batch has been successfully ${status}.`,
     batch: updatedBatch,
   });
@@ -174,7 +175,7 @@ exports.reviewBatchResults = catchAsync(async (req, res, next) => {
 exports.updateAllModuleWeights = catchAsync(async (req, res) => {
   // This is a bulk admin operation - consider adding admin authorization check here
   // if (!req.user || req.user.role !== 'admin') {
-  //   return res.status(403).json({ message: 'Admin access required' });
+  //   return res.status(HTTP_STATUS.FORBIDDEN).json({ message: 'Admin access required' });
   // }
 
   let updatedCount = 0;
@@ -204,7 +205,7 @@ exports.updateAllModuleWeights = catchAsync(async (req, res) => {
     },
   });
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     status: 'success',
     message: 'Module weights update completed',
     updatedCount,

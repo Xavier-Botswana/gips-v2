@@ -1,3 +1,4 @@
+const HTTP_STATUS = require('../utils/httpStatus');
 const axios = require('axios');
 const pb = require('../utils/dbBase');
 
@@ -22,7 +23,7 @@ exports.createLecturer = catchAsync(async (req, res, next) => {
   };
 
   await axios(config).then((response) => {
-    res.status(200).json(response.data);
+    res.status(HTTP_STATUS.OK).json(response.data);
   });
 });
 
@@ -32,13 +33,13 @@ exports.getLecturerByUserId = catchAsync(async (req, res, next) => {
   const lecturer = await safeGetFirst(pb, 'lecturers', `user_id = "${userId}"`);
 
   if (!lecturer) {
-    return res.status(404).json({
+    return res.status(HTTP_STATUS.NOT_FOUND).json({
       status: 'error',
       message: 'Lecturer not found for this user_id',
     });
   }
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     status: 'success',
     data: lecturer,
   });
@@ -53,7 +54,7 @@ exports.getLecturers = catchAsync(async (req, res) => {
     sort: '-created',
   });
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     status: 'success',
     results: lecturers.items.length,
     currentPage: page,
@@ -72,7 +73,7 @@ exports.getLecturer = catchAsync(async (req, res, next) => {
   };
 
   await axios(config).then((response) => {
-    res.status(200).json(response.data);
+    res.status(HTTP_STATUS.OK).json(response.data);
   });
 });
 
@@ -90,7 +91,7 @@ exports.updateLecturer = catchAsync(async (req, res, next) => {
   };
 
   await axios(config).then((response) => {
-    res.status(200).json(response.data);
+    res.status(HTTP_STATUS.OK).json(response.data);
   });
 });
 
@@ -103,6 +104,6 @@ exports.deleteLecturer = catchAsync(async (req, res, next) => {
   };
 
   await axios(config).then((response) => {
-    res.status(200).json(response.data);
+    res.status(HTTP_STATUS.OK).json(response.data);
   });
 });

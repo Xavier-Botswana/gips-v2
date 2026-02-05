@@ -1,3 +1,4 @@
+const HTTP_STATUS = require('../utils/httpStatus');
 const pb = require('../utils/dbBase');
 const { calendarEventSchema } = require('../helpers/validation_schema');
 const catchAsync = require('../utils/catchAsync');
@@ -24,7 +25,7 @@ exports.getAllEvents = catchAsync(async (req, res, next) => {
     sort: '-event_date',
   });
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     status: 'success',
     results: calendarEvents.items.length,
     currentPage: calendarEvents.page,
@@ -41,7 +42,7 @@ exports.createEvent = catchAsync(async (req, res, next) => {
   }
 
   const newEvent = await pb.collection('Calendar_Events').create(req.body);
-  res.status(201).json(newEvent);
+  res.status(HTTP_STATUS.CREATED).json(newEvent);
 });
 
 exports.getEventById = catchAsync(async (req, res, next) => {
@@ -54,7 +55,7 @@ exports.getEventById = catchAsync(async (req, res, next) => {
       return next(new AppError('Calendar Event not found', 404));
     }
 
-    res.status(200).json(event);
+    res.status(HTTP_STATUS.OK).json(event);
   } catch (error) {
     if (error.status === 404 || error.response?.code === 404) {
       return next(new AppError('Calendar Event not found', 404)); // Return 404 for resource not found
@@ -72,11 +73,11 @@ exports.updateEvent = catchAsync(async (req, res, next) => {
   }
 
   const updatedEvent = await pb.collection('Calendar_Events').update(id, value);
-  res.status(200).json(updatedEvent);
+  res.status(HTTP_STATUS.OK).json(updatedEvent);
 });
 
 exports.deleteEvent = catchAsync(async (req, res, next) => {
   const { id } = req.params;
   await pb.collection('Calendar_Events').delete(id);
-  res.status(204).send();
+  res.status(HTTP_STATUS.NO_CONTENT).send();
 });

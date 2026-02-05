@@ -1,3 +1,4 @@
+const HTTP_STATUS = require('../utils/httpStatus');
 const pb = require('../utils/dbBase');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
@@ -25,7 +26,7 @@ exports.getAdmissionLetterByCourseId = catchAsync(async (req, res, next) => {
     ? `${BASE_URL}/api/files/${letter.collectionId}/${letter.id}/${letter.file}`
     : null;
 
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     status: 'success',
     data: {
       letter,
@@ -62,7 +63,7 @@ exports.createAdmissionLetter = catchAsync(async (req, res, next) => {
     file: blob,
   });
 
-  return res.status(201).json({ status: 'success', data: created });
+  return res.status(HTTP_STATUS.CREATED).json({ status: 'success', data: created });
 });
 
 exports.updateAdmissionLetter = catchAsync(async (req, res, next) => {
@@ -95,5 +96,5 @@ exports.updateAdmissionLetter = catchAsync(async (req, res, next) => {
   }
 
   const updated = await pb.collection('Admission_Letters').update(id, payload);
-  return res.status(200).json({ status: 'success', data: updated });
+  return res.status(HTTP_STATUS.OK).json({ status: 'success', data: updated });
 });
