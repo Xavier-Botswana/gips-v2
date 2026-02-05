@@ -1,3 +1,4 @@
+const HTTP_STATUS = require('../utils/httpStatus');
 const pb = require('../utils/dbBase');
 const catchAsync = require('../utils/catchAsync');
 
@@ -11,7 +12,7 @@ exports.startAcademicYear = catchAsync(async (req, res) => {
     description,
   });
   res
-    .status(201)
+    .status(HTTP_STATUS.CREATED)
     .json({ message: 'Academic year started successfully', academicYear });
 });
 
@@ -25,7 +26,7 @@ exports.startSemester = catchAsync(async (req, res) => {
     endDate,
   });
   res
-    .status(201)
+    .status(HTTP_STATUS.CREATED)
     .json({ message: 'Semester started successfully', semester });
 });
 
@@ -36,7 +37,7 @@ exports.viewSystemLogs = catchAsync(async (req, res) => {
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 50;
   const logs = await pb.collection('systemLogs').getList(page, limit);
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     status: 'success',
     currentPage: logs.page,
     totalPages: logs.totalPages,
@@ -53,7 +54,7 @@ exports.addLecturer = catchAsync(async (req, res) => {
     email,
     departmentId,
   });
-  res.status(201).json({ message: 'Lecturer added successfully', lecturer });
+  res.status(HTTP_STATUS.CREATED).json({ message: 'Lecturer added successfully', lecturer });
 });
 
 // Add an HOD
@@ -64,5 +65,5 @@ exports.addHOD = catchAsync(async (req, res) => {
     email,
     facultyId,
   });
-  res.status(201).json({ message: 'HOD added successfully', hod });
+  res.status(HTTP_STATUS.CREATED).json({ message: 'HOD added successfully', hod });
 });

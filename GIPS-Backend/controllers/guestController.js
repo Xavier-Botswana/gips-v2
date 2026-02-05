@@ -1,3 +1,4 @@
+const HTTP_STATUS = require('../utils/httpStatus');
 const pb = require('../utils/dbBase');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
@@ -14,7 +15,7 @@ exports.getGuests = catchAsync(async (req, res) => {
       sort: '-created',
     });
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     status: 'success',
     results: guests.items.length,
     currentPage: page,
@@ -30,13 +31,13 @@ exports.getGuest = catchAsync(async (req, res, next) => {
   if (!guest) {
     return next(new AppError('Guest not found', 404));
   }
-  res.status(200).json(guest);
+  res.status(HTTP_STATUS.OK).json(guest);
 });
 
 exports.createGuest = catchAsync(async (req, res, next) => {
   const guestData = req.body;
   const guest = await pb.collection('guests').create(guestData);
-  res.status(201).json(guest);
+  res.status(HTTP_STATUS.CREATED).json(guest);
 });
 
 exports.updateGuest = catchAsync(async (req, res, next) => {
@@ -49,7 +50,7 @@ exports.updateGuest = catchAsync(async (req, res, next) => {
   const updatedGuest = await pb
     .collection('guests')
     .update(guestId, guestData);
-  res.status(200).json(updatedGuest);
+  res.status(HTTP_STATUS.OK).json(updatedGuest);
 });
 
 exports.deleteGuest = catchAsync(async (req, res, next) => {
@@ -59,5 +60,5 @@ exports.deleteGuest = catchAsync(async (req, res, next) => {
     return next(new AppError('Guest not found', 404));
   }
   await pb.collection('guests').delete(guestId);
-  res.status(204).send();
+  res.status(HTTP_STATUS.NO_CONTENT).send();
 });

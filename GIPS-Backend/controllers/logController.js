@@ -1,3 +1,4 @@
+const HTTP_STATUS = require('../utils/httpStatus');
 const pb = require('../utils/dbBase');
 const catchAsync = require('../utils/catchAsync');
 
@@ -8,7 +9,7 @@ exports.getLogs = catchAsync(async (req, res) => {
     .collection('system_logs')
     .getList(page, perPage, { sort: '-created' });
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     status: 'success',
     results: logs.items.length,
     currentPage: page,

@@ -1,3 +1,4 @@
+const HTTP_STATUS = require('../utils/httpStatus');
 const pb = require('../utils/dbBase');
 const { BASE_URL } = require('../utils/base');
 const catchAsync = require('../utils/catchAsync');
@@ -18,15 +19,15 @@ exports.createArchive = catchAsync(async (req, res) => {
   const date = body.date || new Date().toISOString();
 
   if (!filename) {
-    return res.status(400).json({ status: 'fail', message: 'filename is required' });
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({ status: 'fail', message: 'filename is required' });
   }
 
   if (!file || !file.buffer) {
-    return res.status(400).json({ status: 'fail', message: 'file is required' });
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({ status: 'fail', message: 'file is required' });
   }
 
   if (file.size > MAX_FILE_SIZE_BYTES) {
-    return res.status(400).json({ status: 'fail', message: 'file too large (max 20MB)' });
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({ status: 'fail', message: 'file too large (max 20MB)' });
   }
 
   const blob = new Blob([file.buffer], { type: file.mimetype || 'application/octet-stream' });
@@ -40,7 +41,7 @@ exports.createArchive = catchAsync(async (req, res) => {
     file: blob,
   });
 
-  return res.status(201).json({ status: 'success', data: created });
+  return res.status(HTTP_STATUS.CREATED).json({ status: 'success', data: created });
 });
 
 exports.getArchives = catchAsync(async (req, res) => {
@@ -69,7 +70,7 @@ exports.getArchives = catchAsync(async (req, res) => {
     sort: `${sortPrefix}${field}`,
   });
 
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     status: 'success',
     results: result.items.length,
     currentPage: page,
@@ -85,13 +86,13 @@ exports.getArchiveById = catchAsync(async (req, res) => {
   const archive = await pb.collection('archives').getOne(id);
 
   if (!archive) {
-    return res.status(404).json({
+    return res.status(HTTP_STATUS.NOT_FOUND).json({
       status: 'fail',
       message: 'Archive not found',
     });
   }
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     status: 'success',
     archive,
   });
@@ -102,21 +103,21 @@ exports.getArchiveFileUrl = catchAsync(async (req, res) => {
 
   const archive = await safeGetOne(pb, 'archives', id);
   if (!archive) {
-    return res.status(404).json({ status: 'fail', message: 'Archive not found' });
+    return res.status(HTTP_STATUS.NOT_FOUND).json({ status: 'fail', message: 'Archive not found' });
   }
 
   const raw = archive.file;
   const filenames = Array.isArray(raw) ? raw : raw ? [raw] : [];
 
   if (!filenames.length) {
-    return res.status(404).json({ status: 'fail', message: 'File not available' });
+    return res.status(HTTP_STATUS.NOT_FOUND).json({ status: 'fail', message: 'File not available' });
   }
 
   const fileUrls = filenames.map(
     (filename) => `${BASE_URL}/api/files/${archive.collectionId}/${archive.id}/${filename}`,
   );
 
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     status: 'success',
     data: {
       fileUrl: fileUrls[0],

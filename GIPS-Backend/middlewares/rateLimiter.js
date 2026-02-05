@@ -5,6 +5,7 @@
 
 const rateLimit = require('express-rate-limit');
 const { rateLimits } = require('../config/rateLimits');
+const HTTP_STATUS = require('../utils/httpStatus');
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -24,7 +25,7 @@ const handleLimitReached = (req, res, options) => {
     console.warn(`[Rate Limit] Limit exceeded for ${clientId} on ${endpoint}`);
   }
   
-  res.status(429).json(options.message);
+  res.status(HTTP_STATUS.TOO_MANY_REQUESTS).json(options.message);
 };
 
 /**

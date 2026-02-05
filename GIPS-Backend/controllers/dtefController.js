@@ -1,3 +1,4 @@
+const HTTP_STATUS = require('../utils/httpStatus');
 const axios = require('axios');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
@@ -85,7 +86,7 @@ exports.sendRegistration = catchAsync(async (req, res, next) => {
       },
     });
 
-    return res.status(200).json({ status: 'success', message: 'DTEF registration submitted' });
+    return res.status(HTTP_STATUS.OK).json({ status: 'success', message: 'DTEF registration submitted' });
   } catch (error) {
     return next(new AppError(`DTEF registration failed: ${error.message}`, error.response?.status || 502));
   }

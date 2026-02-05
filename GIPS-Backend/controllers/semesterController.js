@@ -1,3 +1,4 @@
+const HTTP_STATUS = require('../utils/httpStatus');
 const axios = require('axios');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
@@ -14,7 +15,7 @@ exports.getAllSemesters = catchAsync(async (req, res, next) => {
   };
 
   await axios(config).then((response) => {
-    res.status(200).json(response.data.items);
+    res.status(HTTP_STATUS.OK).json(response.data.items);
   });
 });
 
@@ -28,7 +29,7 @@ exports.getSemester = catchAsync(async (req, res, next) => {
   };
 
   await axios(config).then((response) => {
-    res.status(200).json(response.data);
+    res.status(HTTP_STATUS.OK).json(response.data);
   });
 });
 
@@ -44,7 +45,7 @@ exports.createSemester = catchAsync(async (req, res, next) => {
   };
 
   await axios(config).then((response) => {
-    res.status(201).json(response.data);
+    res.status(HTTP_STATUS.CREATED).json(response.data);
   });
 });
 
@@ -62,7 +63,7 @@ exports.updateSemester = catchAsync(async (req, res, next) => {
   };
 
   await axios(config).then((response) => {
-    res.status(200).json(response.data);
+    res.status(HTTP_STATUS.OK).json(response.data);
   });
 });
 
@@ -226,7 +227,7 @@ exports.rolloverSemester = catchAsync(async (req, res, next) => {
     page += 1;
   }
 
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     status: 'success',
     data: {
       semester1,

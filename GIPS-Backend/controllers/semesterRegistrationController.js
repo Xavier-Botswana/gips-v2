@@ -1,3 +1,4 @@
+const HTTP_STATUS = require('../utils/httpStatus');
 const pb = require('../utils/dbBase');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
@@ -43,7 +44,7 @@ exports.getAvailableModules = catchAsync(async (req, res, next) => {
 
   const uniqueIds = [...new Set(moduleIds)].filter(Boolean);
   if (!uniqueIds.length) {
-    return res.status(200).json({
+    return res.status(HTTP_STATUS.OK).json({
       status: 'success',
       currentPage: 1,
       totalPages: 0,
@@ -77,7 +78,7 @@ exports.getAvailableModules = catchAsync(async (req, res, next) => {
   const paginatedModules = modules.slice(startIndex, endIndex);
   const totalPages = Math.ceil(modules.length / limit);
 
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     status: 'success',
     currentPage: page,
     totalPages,

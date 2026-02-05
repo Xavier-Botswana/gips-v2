@@ -1,3 +1,4 @@
+const HTTP_STATUS = require('../utils/httpStatus');
 /* eslint-disable prettier/prettier */
 const pb = require('../utils/dbBase');
 const catchAsync = require('../utils/catchAsync');
@@ -86,7 +87,7 @@ exports.createResult = catchAsync(async (req, res, next) => {
   // include progression on the created result response
   result.progressionStatus = computedProgression;
 
-  res.status(201).json({
+  res.status(HTTP_STATUS.CREATED).json({
     message: 'Result created successfully',
     result,
   });
@@ -103,7 +104,7 @@ exports.getBatchResults = catchAsync(async (req, res) => {
       sort: '-created',
     });
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     status: 'success',
     results: batchResults.items.length,
     currentPage: page,
@@ -126,7 +127,7 @@ exports.getBatchResultsByModuleId = catchAsync(async (req, res) => {
       sort: '-created',
     });
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     status: 'success',
     results: batchResults.items.length,
     currentPage: page,
@@ -139,7 +140,7 @@ exports.getBatchResultsByModuleId = catchAsync(async (req, res) => {
 exports.getBatchResultById = catchAsync(async (req, res) => {
   const { batchId } = req.params;
   if (!batchId) {
-    return res.status(400).json({ message: 'batchId is required' });
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: 'batchId is required' });
   }
 
   try {
@@ -150,12 +151,12 @@ exports.getBatchResultById = catchAsync(async (req, res) => {
         'semester,semesterId,moduleId,lecturerId,courseId,facultyId,results,results.studentId,results.moduleId,results.courseId,results.facultyId',
     });
 
-    return res.status(200).json({
+    return res.status(HTTP_STATUS.OK).json({
       status: 'success',
       data: batch,
     });
   } catch (error) {
-    return res.status(404).json({ message: 'Batch not found' });
+    return res.status(HTTP_STATUS.NOT_FOUND).json({ message: 'Batch not found' });
   }
 });
 
@@ -163,7 +164,7 @@ exports.getBatchResultById = catchAsync(async (req, res) => {
 exports.recomputeProgression = catchAsync(async (req, res) => {
   const { studentId, semester } = req.body;
   if (!studentId || !semester) {
-    return res.status(400).json({ message: 'studentId and semester are required' });
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: 'studentId and semester are required' });
   }
 
   const semesterResults = await pb.collection('results').getList(1, 50, {
@@ -171,7 +172,7 @@ exports.recomputeProgression = catchAsync(async (req, res) => {
   });
 
   if (!semesterResults.items.length) {
-    return res.status(404).json({ message: 'No results found for student/semester' });
+    return res.status(HTTP_STATUS.NOT_FOUND).json({ message: 'No results found for student/semester' });
   }
 
   const computedProgression = computeProgressionStatus(semesterResults.items);
@@ -181,7 +182,7 @@ exports.recomputeProgression = catchAsync(async (req, res) => {
     ),
   );
 
-  return res.status(200).json({ message: 'Progression recomputed', progressionStatus: computedProgression });
+  return res.status(HTTP_STATUS.OK).json({ message: 'Progression recomputed', progressionStatus: computedProgression });
 });
 
 exports.getResults = catchAsync(async (req, res) => {
@@ -228,7 +229,7 @@ exports.getResults = catchAsync(async (req, res) => {
     filter,
   });
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     status: 'success',
     results: results.items.length,
     currentPage: page,
@@ -263,7 +264,7 @@ exports.getMyResults = catchAsync(async (req, res, next) => {
     sort: '-created',
   });
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     data: {
       results: results.items,
       student,
@@ -296,7 +297,7 @@ exports.getResultsByStudentId = catchAsync(async (req, res, next) => {
     sort: '-created',
   });
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     data: {
       results: results.items,
       student,
@@ -329,7 +330,7 @@ exports.getResultsByYearOfStudy = catchAsync(async (req, res) => {
     expand: 'studentId, moduleId, courseId, facultyId',
     sort: '-created',
   });
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     data: results.items,
     currentPage: results.page,
     totalPages: results.totalPages,
@@ -347,7 +348,7 @@ exports.getResultsByFacultyId = catchAsync(async (req, res) => {
     expand: 'studentId, moduleId, courseId',
     sort: '-created',
   });
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     data: results.items,
     currentPage: results.page,
     totalPages: results.totalPages,
@@ -365,7 +366,7 @@ exports.getResultsByCourseId = catchAsync(async (req, res) => {
     expand: 'studentId, moduleId, facultyId',
     sort: '-created',
   });
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     data: results.items,
     currentPage: results.page,
     totalPages: results.totalPages,
@@ -429,7 +430,7 @@ exports.NewSubmitBatchResults = catchAsync(async (req, res, next) => {
       ),
     );
 
-    return res.status(200).json({
+    return res.status(HTTP_STATUS.OK).json({
       message: 'Results updated successfully',
       updatedSubmission,
     });
@@ -449,7 +450,7 @@ exports.NewSubmitBatchResults = catchAsync(async (req, res, next) => {
     semesterId,
   });
 
-  return res.status(201).json({
+  return res.status(HTTP_STATUS.CREATED).json({
     message: 'New submission created',
     newSubmission,
   });
@@ -510,7 +511,7 @@ exports.submitBatchResults = catchAsync(async (req, res, next) => {
     ),
   );
 
-  res.status(201).json({
+  res.status(HTTP_STATUS.CREATED).json({
     message: 'Batch results submitted successfully for review',
     batch,
   });
@@ -541,7 +542,7 @@ exports.updateResult = catchAsync(async (req, res, next) => {
     ),
   );
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     message: 'Result updated successfully',
     updatedResult: { ...updatedResult, progressionStatus: computedProgression },
   });
@@ -558,7 +559,7 @@ exports.getSupplementaryResults = catchAsync(async (req, res) => {
     expand: 'studentId,moduleId,courseId,facultyId',
   });
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     status: 'success',
     results: results.items.length,
     currentPage: results.page,

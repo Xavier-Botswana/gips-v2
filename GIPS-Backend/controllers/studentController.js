@@ -1,3 +1,4 @@
+const HTTP_STATUS = require('../utils/httpStatus');
 const pb = require('../utils/dbBase');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
@@ -12,7 +13,7 @@ exports.createStudent = catchAsync(async (req, res, next) => {
 
   const record = await StudentService.create(body);
 
-  return res.status(201).json({
+  return res.status(HTTP_STATUS.CREATED).json({
     status: 'success',
     data: record,
   });
@@ -70,7 +71,7 @@ exports.getStudents = catchAsync(async (req, res, next) => {
 
   const students = await StudentService.list(page, limit, filter, sort);
 
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     status: 'success',
     results: students.items.length,
     currentPage: page,
@@ -91,7 +92,7 @@ exports.getMyStudent = catchAsync(async (req, res, next) => {
     return next(new AppError('Student not found', 404));
   }
 
-  return res.status(200).json({ status: 'success', data: student });
+  return res.status(HTTP_STATUS.OK).json({ status: 'success', data: student });
 });
 
 exports.getStudentByUserId = catchAsync(async (req, res, next) => {
@@ -105,7 +106,7 @@ exports.getStudentByUserId = catchAsync(async (req, res, next) => {
     return next(new AppError('Student not found', 404));
   }
 
-  return res.status(200).json({ status: 'success', data: student });
+  return res.status(HTTP_STATUS.OK).json({ status: 'success', data: student });
 });
 
 exports.getAllStudents = catchAsync(async (req, res, next) => {
@@ -115,7 +116,7 @@ exports.getAllStudents = catchAsync(async (req, res, next) => {
 
   const result = await StudentService.list(page, limit, filter);
 
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     status: 'success',
     currentPage: result.page,
     totalPages: result.totalPages,
@@ -134,7 +135,7 @@ exports.getStudent = catchAsync(async (req, res, next) => {
     return next(new AppError('Student not found', 404));
   }
 
-  return res.status(200).json({ status: 'success', data: student });
+  return res.status(HTTP_STATUS.OK).json({ status: 'success', data: student });
 });
 
 exports.updateStudent = catchAsync(async (req, res, next) => {
@@ -151,7 +152,7 @@ exports.updateStudent = catchAsync(async (req, res, next) => {
     ...req.body,
   });
 
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     status: 'success',
     message: 'Student updated successfully',
     data: updated,
@@ -168,5 +169,5 @@ exports.deleteStudent = catchAsync(async (req, res, next) => {
 
   await StudentService.delete(studentId);
 
-  return res.status(200).json({ status: 'success', message: 'Student deleted' });
+  return res.status(HTTP_STATUS.OK).json({ status: 'success', message: 'Student deleted' });
 });

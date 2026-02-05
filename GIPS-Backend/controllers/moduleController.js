@@ -1,3 +1,4 @@
+const HTTP_STATUS = require('../utils/httpStatus');
 const pb = require('../utils/dbBase');
 const catchAsync = require('../utils/catchAsync');
 const { safeGetFirst, withDbErrorHandling } = require('../utils/dbHelpers');
@@ -30,7 +31,7 @@ exports.createModule = catchAsync(async (req, res) => {
     });
 
     if (prereqModules.items.length !== prerequisites.length) {
-      return res.status(400).json({
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
         message: 'One or more prerequisite modules do not exist',
       });
     }
@@ -57,7 +58,7 @@ exports.createModule = catchAsync(async (req, res) => {
 
   const module = await pb.collection('modules').create(moduleData);
 
-  res.status(201).json({
+  res.status(HTTP_STATUS.CREATED).json({
     message: 'Module created successfully',
     module,
   });
@@ -113,7 +114,7 @@ exports.getAllModules = catchAsync(async (req, res) => {
     sort,
   });
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     message: 'Modules retrieved successfully',
     totalItems: modules.totalItems,
     totalPages: modules.totalPages,
@@ -131,7 +132,7 @@ exports.getModule = catchAsync(async (req, res) => {
   });
 
   if (!module) {
-    return res.status(404).json({
+    return res.status(HTTP_STATUS.NOT_FOUND).json({
       message: 'Module not found',
     });
   }
@@ -142,7 +143,7 @@ exports.getModule = catchAsync(async (req, res) => {
     fields: 'id,name,module_code',
   });
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     ...module,
     dependent_modules: dependentModules.items,
   });
@@ -157,7 +158,7 @@ exports.updateModule = catchAsync(async (req, res) => {
   const existingModule = await pb.collection('modules').getOne(id);
 
   if (!existingModule) {
-    return res.status(404).json({
+    return res.status(HTTP_STATUS.NOT_FOUND).json({
       message: 'Module not found',
     });
   }
@@ -166,7 +167,7 @@ exports.updateModule = catchAsync(async (req, res) => {
   if (prerequisites?.length > 0) {
     // Prevent circular prerequisites
     if (prerequisites.includes(id)) {
-      return res.status(400).json({
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
         message: 'A module cannot be its own prerequisite',
       });
     }
@@ -176,7 +177,7 @@ exports.updateModule = catchAsync(async (req, res) => {
     });
 
     if (prereqModules.items.length !== prerequisites.length) {
-      return res.status(400).json({
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
         message: 'One or more prerequisite modules do not exist',
       });
     }
@@ -189,7 +190,7 @@ exports.updateModule = catchAsync(async (req, res) => {
     prerequisites: prerequisites || existingModule.prerequisites,
   });
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     message: 'Module updated successfully',
     module: updatedModule,
   });
@@ -206,14 +207,14 @@ exports.deleteModule = catchAsync(async (req, res) => {
   });
 
   if (dependentModules.items.length > 0) {
-    return res.status(400).json({
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({
       message: 'Cannot delete module as it is a prerequisite for other modules',
       dependent_modules: dependentModules,
     });
   }
 
   await pb.collection('modules').delete(id);
-  res.status(200).json({ message: 'Module deleted successfully' });
+  res.status(HTTP_STATUS.OK).json({ message: 'Module deleted successfully' });
 });
 
 // Get modules by course with semester grouping
@@ -240,7 +241,7 @@ exports.getModulesByCourseId = catchAsync(async (req, res) => {
     return acc;
   }, {});
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     status: 'success',
     currentPage: modules.page,
     totalPages: modules.totalPages,
@@ -273,7 +274,7 @@ exports.getModulePrerequisites = catchAsync(async (req, res) => {
   };
 
   const prerequisiteTree = await getPrerequisiteTree(id);
-  res.status(200).json(prerequisiteTree);
+  res.status(HTTP_STATUS.OK).json(prerequisiteTree);
 });
 
 exports.getModuleLecturers = catchAsync(async (req, res) => {
@@ -296,7 +297,7 @@ exports.getModuleLecturers = catchAsync(async (req, res) => {
       filter,
     });
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     status: 'success',
     results: moduleLecturers.items.length,
     currentPage: page,
@@ -309,13 +310,13 @@ exports.getModuleLecturers = catchAsync(async (req, res) => {
 exports.deleteModuleLecturerAssignment = catchAsync(async (req, res) => {
   const { id } = req.params;
   await pb.collection('module_lecturers').delete(id);
-  res.status(204).send();
+  res.status(HTTP_STATUS.NO_CONTENT).send();
 });
 
 exports.assignModulesToLecturerByName = catchAsync(async (req, res) => {
   const { lecturerName } = req.body;
   if (!lecturerName || !String(lecturerName).trim()) {
-    return res.status(400).json({ status: 'fail', message: 'lecturerName is required' });
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({ status: 'fail', message: 'lecturerName is required' });
   }
 
   const safeName = String(lecturerName).replace(/"/g, '\\"');
@@ -323,7 +324,7 @@ exports.assignModulesToLecturerByName = catchAsync(async (req, res) => {
   const lecturer = await safeGetFirst(pb, 'lecturers', `name = "${safeName}"`);
 
   if (!lecturer) {
-    return res.status(404).json({ status: 'fail', message: 'Lecturer not found' });
+    return res.status(HTTP_STATUS.NOT_FOUND).json({ status: 'fail', message: 'Lecturer not found' });
   }
 
   const levelMap = {
@@ -339,7 +340,7 @@ exports.assignModulesToLecturerByName = catchAsync(async (req, res) => {
   });
 
   if (!modules.items.length) {
-    return res.status(200).json({
+    return res.status(HTTP_STATUS.OK).json({
       success: true,
       message: 'No modules found for this lecturer',
       assignedNow: 0,
@@ -359,7 +360,7 @@ exports.assignModulesToLecturerByName = catchAsync(async (req, res) => {
   const remainingModules = modules.items.filter((m) => !existingModuleIds.has(m.id));
 
   if (!remainingModules.length) {
-    return res.status(200).json({
+    return res.status(HTTP_STATUS.OK).json({
       success: true,
       message: 'No new modules to assign',
       totalModules: modules.items.length,
@@ -388,7 +389,7 @@ exports.assignModulesToLecturerByName = catchAsync(async (req, res) => {
     createdRecords.push(...createdChunk);
   }
 
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     success: true,
     message: 'Modules successfully assigned',
     totalModules: modules.items.length,
@@ -404,14 +405,14 @@ exports.getModuleLecturerAssignmentsByName = catchAsync(async (req, res) => {
   const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 20, 1), 100);
 
   if (!lecturerName || !String(lecturerName).trim()) {
-    return res.status(400).json({ status: 'fail', message: 'lecturerName is required' });
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({ status: 'fail', message: 'lecturerName is required' });
   }
 
   const term = String(lecturerName).replace(/"/g, '\\"');
   const lecturer = await safeGetFirst(pb, 'lecturers', `name ~ "${term}"`);
 
   if (!lecturer) {
-    return res.status(404).json({ status: 'fail', message: 'Lecturer not found' });
+    return res.status(HTTP_STATUS.NOT_FOUND).json({ status: 'fail', message: 'Lecturer not found' });
   }
 
   const assignments = await pb.collection('module_lecturers').getList(page, limit, {
@@ -431,7 +432,7 @@ exports.getModuleLecturerAssignmentsByName = catchAsync(async (req, res) => {
     };
   });
 
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     status: 'success',
     currentPage: page,
     totalPages: assignments.totalPages,
@@ -447,7 +448,7 @@ exports.assignLecturerToModule = catchAsync(async (req, res) => {
   const { module_id, lecturer_id, level } = req.body;
 
   if (!module_id || !lecturer_id) {
-    return res.status(400).json({
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({
       message: 'Missing required fields',
     });
   }
@@ -460,7 +461,7 @@ exports.assignLecturerToModule = catchAsync(async (req, res) => {
   );
 
   if (existingAssignment) {
-    return res.status(400).json({
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({
       message: 'Lecturer is already assigned to this module',
     });
   }
@@ -471,7 +472,7 @@ exports.assignLecturerToModule = catchAsync(async (req, res) => {
     level,
   });
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     message: 'Lecturer assigned to module successfully',
     assignment: response,
   });

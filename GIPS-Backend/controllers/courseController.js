@@ -1,3 +1,4 @@
+const HTTP_STATUS = require('../utils/httpStatus');
 const pb = require('../utils/dbBase');
 const { courseSchema } = require('../helpers/validation_schema');
 const catchAsync = require('../utils/catchAsync');
@@ -13,7 +14,7 @@ exports.createCourse = catchAsync(async (req, res, next) => {
 
   const course = await pb.collection('courses').create(value);
 
-  res.status(201).json({
+  res.status(HTTP_STATUS.CREATED).json({
     message: 'Course created successfully',
     course,
   });
@@ -46,7 +47,7 @@ exports.getAllCourses = catchAsync(async (req, res, next) => {
     sort,
   });
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     message: 'Courses retrieved successfully',
     totalItems: courses.totalItems,
     totalPages: courses.totalPages,
@@ -65,7 +66,7 @@ exports.getCourse = catchAsync(async (req, res, next) => {
     return next(new AppError('Course not found', 404));
   }
 
-  res.status(200).json(course);
+  res.status(HTTP_STATUS.OK).json(course);
 });
 
 exports.updateCourse = catchAsync(async (req, res, next) => {
@@ -83,7 +84,7 @@ exports.updateCourse = catchAsync(async (req, res, next) => {
 
   const updatedCourse = await pb.collection('courses').update(id, value);
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     message: 'Course updated successfully',
     updatedCourse,
   });
@@ -98,7 +99,7 @@ exports.deleteCourse = catchAsync(async (req, res, next) => {
   }
 
   await pb.collection('courses').delete(id);
-  res.status(204).send();
+  res.status(HTTP_STATUS.NO_CONTENT).send();
 });
 
 exports.getCoursesByFacultyId = catchAsync(async (req, res, next) => {
@@ -110,7 +111,7 @@ exports.getCoursesByFacultyId = catchAsync(async (req, res, next) => {
     filter: `faculty = "${faculty_id}"`,
   });
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     message: 'Courses retrieved successfully',
     totalItems: courses.totalItems,
     totalPages: courses.totalPages,

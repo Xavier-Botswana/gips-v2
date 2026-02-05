@@ -1,3 +1,4 @@
+const HTTP_STATUS = require('../utils/httpStatus');
 const pb = require('../utils/dbBase');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
@@ -10,7 +11,7 @@ const getAllFaculties = catchAsync(async (req, res) => {
     expand: 'facilitator',
   });
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     status: 'success',
     currentPage: faculties.page,
     totalPages: faculties.totalPages,
@@ -26,7 +27,7 @@ const createFaculty = catchAsync(async (req, res) => {
     .collection('faculties')
     .create({ name, facilitator });
 
-  res.status(201).json(faculty);
+  res.status(HTTP_STATUS.CREATED).json(faculty);
 });
 
 const updateFaculty = catchAsync(async (req, res, next) => {
@@ -41,7 +42,7 @@ const updateFaculty = catchAsync(async (req, res, next) => {
     .collection('faculties')
     .update(id, updatedFaculty);
 
-  res.status(200).json(response);
+  res.status(HTTP_STATUS.OK).json(response);
 });
 
 const getFacultyById = catchAsync(async (req, res, next) => {
@@ -52,7 +53,7 @@ const getFacultyById = catchAsync(async (req, res, next) => {
     return next(new AppError('Faculty not found', 404));
   }
 
-  res.status(200).json(faculty);
+  res.status(HTTP_STATUS.OK).json(faculty);
 });
 
 // Note will not work if the faculty has courses
@@ -65,7 +66,7 @@ const deleteFaculty = catchAsync(async (req, res, next) => {
 
   const response = await pb.collection('faculties').delete(id);
 
-  res.status(200).json(response);
+  res.status(HTTP_STATUS.OK).json(response);
 });
 
 module.exports = {

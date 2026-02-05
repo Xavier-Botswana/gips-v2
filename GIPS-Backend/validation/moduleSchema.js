@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const HTTP_STATUS = require('../utils/httpStatus');
 
 const moduleSchema = {
   create: Joi.object({
@@ -163,7 +164,7 @@ const validateModule = (schema) => (req, res, next) => {
       message: detail.message,
     }));
 
-    return res.status(400).json({
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({
       message: 'Validation failed',
       errors,
     });

@@ -1,3 +1,4 @@
+const HTTP_STATUS = require('../utils/httpStatus');
 require('dotenv').config();
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
@@ -24,7 +25,7 @@ exports.sendSMS = catchAsync(async (req, res, next) => {
     ),
   );
 
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     status: 'success',
     message: 'SMS sent successfully',
     data: results.map((message) => ({ sid: message.sid })),

@@ -1,4 +1,5 @@
 const AppError = require('../utils/appError');
+const HTTP_STATUS = require('../utils/httpStatus');
 
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
@@ -18,16 +19,16 @@ const sendErrorProd = (err, res) => {
   }
 
   // Programming or unknown error
-  return res.status(500).json({
+  return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
     status: 'error',
     message: 'Something went wrong',
   });
 };
 
 module.exports = (err, _req, res, _next) => {
-  const error = err instanceof AppError ? err : new AppError(err.message || 'Error', err.statusCode || 500);
+  const error = err instanceof AppError ? err : new AppError(err.message || 'Error', err.statusCode || HTTP_STATUS.INTERNAL_SERVER_ERROR);
 
-  error.statusCode = error.statusCode || 500;
+  error.statusCode = error.statusCode || HTTP_STATUS.INTERNAL_SERVER_ERROR;
   error.status = error.status || 'error';
 
   if (process.env.NODE_ENV === 'production') {

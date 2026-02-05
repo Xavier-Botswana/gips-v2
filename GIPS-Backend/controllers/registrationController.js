@@ -65,7 +65,7 @@ exports.getRegistration = catchAsync(async (req, res, next) => {
 
 //     const record = await pb.collection('registration').create(data);
 
-//     res.status(201).json({
+//     res.status(HTTP_STATUS.CREATED).json({
 //       status: 'success',
 //       data: record,
 //     });
@@ -189,7 +189,7 @@ exports.getRegistrations = catchAsync(async (req, res) => {
       filter,
     });
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     status: 'success',
     results: registrations.items.length,
     currentPage: page,
@@ -214,7 +214,7 @@ exports.getMyRegistrations = catchAsync(async (req, res, next) => {
     sort: '-created',
   });
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     status: 'success',
     results: registrations.items.length,
     currentPage: page,
@@ -235,7 +235,7 @@ exports.getStudentRegistration = catchAsync(async (req, res, next) => {
     return next(new AppError('Registration not found', HTTP_STATUS.NOT_FOUND));
   }
 
-  res.status(200).json({
+  res.status(HTTP_STATUS.OK).json({
     status: 'success',
     data: registration,
   });
@@ -254,7 +254,7 @@ exports.updateRegistration = catchAsync(async (req, res, next) => {
     ...req.body,
   });
 
-  return res.status(200).json({ status: 'success', data: updated });
+  return res.status(HTTP_STATUS.OK).json({ status: 'success', data: updated });
 });
 
 exports.deleteRegistration = catchAsync(async (req, res, next) => {
@@ -266,7 +266,7 @@ exports.deleteRegistration = catchAsync(async (req, res, next) => {
   }
 
   await pb.collection('registration').delete(registrationId);
-  return res.status(204).send();
+  return res.status(HTTP_STATUS.NO_CONTENT).send();
 });
 
 exports.approveRegistration = catchAsync(async (req, res, next) => {
@@ -358,7 +358,7 @@ exports.approveRegistration = catchAsync(async (req, res, next) => {
     student_id: studentId,
   });
 
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     status: 'success',
     data: {
       registration: updatedRegistration,
@@ -404,7 +404,7 @@ exports.getRegistrationsByTrNumber = catchAsync(async (req, res, next) => {
     sort: '-created',
   });
 
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     status: 'success',
     results: registrations.items.length,
     currentPage: page,
@@ -445,7 +445,7 @@ exports.updateMyRegistration = catchAsync(async (req, res, next) => {
   }
 
   const updated = await pb.collection('registration').update(registrationId, data);
-  return res.status(200).json({ status: 'success', data: updated });
+  return res.status(HTTP_STATUS.OK).json({ status: 'success', data: updated });
 });
 
 exports.getRegistrationFileUrl = catchAsync(async (req, res, next) => {
@@ -486,7 +486,7 @@ exports.getRegistrationFileUrl = catchAsync(async (req, res, next) => {
     (filename) => `${BASE_URL}/api/files/${registration.collectionId}/${registration.id}/${filename}`,
   );
 
-  return res.status(200).json({
+  return res.status(HTTP_STATUS.OK).json({
     status: 'success',
     data: {
       fileUrl: fileUrls[0],
