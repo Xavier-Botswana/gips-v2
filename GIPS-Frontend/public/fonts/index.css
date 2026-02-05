@@ -1,0 +1,109 @@
+@font-face {
+  font-family: 'CircularStd';
+  font-weight: 400;
+  font-style: normal;
+  src: local('CircularStd'), url('CircularStd-Book.otf') format('opentype');
+}
+@font-face {
+  font-family: 'CircularStd';
+  font-weight: 500;
+  font-style: normal;
+  src: local('CircularStd'), url('CircularStd-Medium.otf') format('opentype');
+}
+@font-face {
+  font-family: 'CircularStd';
+  font-weight: 700;
+  font-style: normal;
+  src: local('CircularStd'), url('CircularStd-Bold.otf') format('opentype');
+}
+
+
+/* drop-file-input.css */
+.drop-file-input {
+  background-color: #d6e3ec;
+  display: flex;
+  flex-direction: column; 
+  /* cursor: pointer; */
+
+  align-items: center;
+  justify-content: center;
+}
+
+.drop-file-input input {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+
+}
+
+.drop-file-input:hover,
+.drop-file-input.dragover {
+  opacity: 0.6;
+}
+
+.drop-file-input__label {
+  text-align: center;
+  color: var(--txt-second-color);
+  font-weight: 600;
+  padding: 10px;
+}
+
+.drop-file-input__label img {
+  width: 100px;
+}
+
+.drop-file-preview {
+  margin-top:10px;
+}
+
+.drop-file-preview p {
+  font-weight: 500;
+}
+
+.drop-file-preview__title {
+  margin-bottom: 20px;
+}
+
+.drop-file-preview__item {
+  position: relative;
+  display: flex;
+  margin-bottom: 10px;
+  background-color: var(--input-bg);
+  padding: 15px;
+  border-radius: 20px;
+}
+
+.drop-file-preview__item img {
+  width: 100%;
+  margin-right: 20px;
+}
+
+.drop-file-preview__item__info {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.drop-file-preview__item__del {
+  background-color: var(--box-bg);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  box-shadow: var(--box-shadow);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.drop-file-preview__item:hover .drop-file-preview__item__del {
+  opacity: 1;
+}

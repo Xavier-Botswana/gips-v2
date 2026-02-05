@@ -1,0 +1,90 @@
+name: Run Jest Tests
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run Jest tests
+        id: run_tests
+        env:
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+          DB_URL: ${{ secrets.DB_URL }}
+        run: |
+          npm test -- --ci --json --outputFile=test-results.json
+
+      - name: Parse test results
+        id: parse_results
+        run: |
+          passed=$(jq '.numPassedTests' test-results.json)
+          failed=$(jq '.numFailedTests' test-results.json)
+          total=$(jq '.numTotalTests' test-results.json)
+          echo "passed=$passed" >> $GITHUB_OUTPUT
+          echo "failed=$failed" >> $GITHUB_OUTPUT
+          echo "total=$total" >> $GITHUB_OUTPUT
+
+      - name: Get Commit Information
+        id: get_commit_info
+        run: |
+          # Properly escape commit message and author for GitHub Actions output
+          commit_message=$(git log -1 --pretty=%B | tr '\n' ' ' | sed 's/"/\\"/g')
+          commit_author=$(git log -1 --pretty=format:'%an' | sed 's/"/\\"/g')
+          echo "message<<EOF" >> $GITHUB_OUTPUT
+          echo "$commit_message" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo "author<<EOF" >> $GITHUB_OUTPUT
+          echo "$commit_author" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Get Pull Request or Push Info
+        if: github.event_name == 'pull_request'
+        id: pr_info
+        run: |
+          echo "title<<EOF" >> $GITHUB_OUTPUT
+          echo "${{ github.event.pull_request.title }}" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo "body<<EOF" >> $GITHUB_OUTPUT
+          echo "${{ github.event.pull_request.body }}" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Get Files Changed
+        id: get_files_changed
+        run: |
+          files=$(git diff --name-only HEAD~1 HEAD | tr '\n' ' ' | sed 's/"/\\"/g')
+          echo "files_changed<<EOF" >> $GITHUB_OUTPUT
+          echo "$files" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Notify Discord
+        if: always()
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+          -d '{
+            "username": "GitHub Actions Bot",
+            "content": "**Test Suite Results**: ${{ job.status }}\n**Total Tests**: ${{ steps.parse_results.outputs.total }}\n**Passed**: ${{ steps.parse_results.outputs.passed }}\n**Failed**: ${{ steps.parse_results.outputs.failed }}\n**Commit Message**: ${{ steps.get_commit_info.outputs.message }}\n**Author**: ${{ steps.get_commit_info.outputs.author }}\n**Repository**: ${{ github.repository }}"
+          }' \
+          https://discord.com/api/webhooks/1228115807377297458/l_3XyQiZscrZOEt7TBo2797yvV5YbxKDviRifu-saBFN7NY8MoYxprOXrgLjum40bV_W

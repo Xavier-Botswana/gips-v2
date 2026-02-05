@@ -1,0 +1,36 @@
+const mockResults = [
+  {
+    studentId: 'student_1',
+    courseId: 'course_1',
+    facultyId: 'faculty_1',
+    yearOfStudy: 1,
+    semester: 'Fall',
+    moduleId: 'module_1',
+    assignmentMark: 80,
+    midSemesterMark: 75,
+    supplementaryMark: null,
+    examMark: 60,
+    moduleMark: 78,
+    nonCreditAssessments: null,
+    lecturerId: 'lecturer_1',
+    batchId: 'batch_1',
+  },
+  {
+    studentId: 'student_2',
+    courseId: 'course_1',
+    facultyId: 'faculty_1',
+    yearOfStudy: 1,
+    semester: 'Fall',
+    moduleId: 'module_2',
+    assignmentMark: 85,
+    midSemesterMark: 80,
+    supplementaryMark: null,
+    examMark: 70,
+    moduleMark: 80,
+    nonCreditAssessments: null,
+    lecturerId: 'lecturer_1',
+    batchId: 'batch_1',
+  },
+];
+
+module.exports = mockResults;
